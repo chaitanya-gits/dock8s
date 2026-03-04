@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark">
+    <html lang="en" data-theme="light">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -18,10 +18,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           (function() {
             try {
               var t = localStorage.getItem('theme');
-              if (t === 'light' || (!t && window.matchMedia('(prefers-color-scheme: light)').matches)) {
-                document.documentElement.setAttribute('data-theme', 'light');
-              } else {
+              if (t === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
+              } else {
+                document.documentElement.setAttribute('data-theme', 'light');
               }
             } catch (e) {}
           })();

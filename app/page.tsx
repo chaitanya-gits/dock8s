@@ -79,14 +79,14 @@ function SearchBar() {
         placeholder="Search…"
         style={{
           width: "100%", padding: "5px 10px 5px 28px",
-          border: `1px solid rgba(0,0,0,0.13)`, borderRadius: 4,
+          border: `1px solid var(--border-alpha)`, borderRadius: 4,
           fontFamily: "'JetBrains Mono', monospace", fontSize: "0.68rem",
           background: "var(--search-bg, rgba(255,255,255,0.6))", color: S.ink, outline: "none",
           backdropFilter: "blur(8px)",
           transition: "border 0.2s, width 0.3s",
         }}
         onFocus={e => { e.currentTarget.style.border = `1px solid ${S.accent}`; }}
-        onBlur={e => { e.currentTarget.style.border = `1px solid rgba(0,0,0,0.13)`; }}
+        onBlur={e => { e.currentTarget.style.border = `1px solid var(--border-alpha)`; }}
       />
       <span style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: S.ink3, fontSize: "0.78rem", pointerEvents: "none" }}>⌕</span>
       {open && (
@@ -180,7 +180,7 @@ function ConceptCard({ title, children }: { title: string; children: React.React
 function PipelineStage({ status, title, children }: { status: "pass" | "run" | "fail"; title: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const colors = { pass: S.accent2, run: S.yellow, fail: S.accent };
-  const badges = { pass: { bg: "var(--pass-bg)", color: S.accent2, label: "PASS" }, run: { bg: "var(--run-bg)", color: "#7a6000", label: "GATE" }, fail: { bg: "var(--fail-bg)", color: S.accent, label: "FAIL" } };
+  const badges = { pass: { bg: "var(--pass-bg)", color: S.accent2, label: "PASS" }, run: { bg: "var(--run-bg)", color: "var(--dock-3-color)", label: "GATE" }, fail: { bg: "var(--fail-bg)", color: S.accent, label: "FAIL" } };
   const b = badges[status];
   return (
     <div onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "stretch", borderBottom: `1px solid ${S.border}`, cursor: "pointer", transition: "background 0.15s" }}
@@ -286,7 +286,7 @@ function QuizSection({ onAnswer }: { onAnswer: (questionId: string, correct: boo
             if (result) {
               if (i === result.correctAnswer) { bg = "var(--pass-bg)"; border = S.accent2; color = S.accent2; }
               else if (i === selected && !result.correct) { bg = "var(--fail-bg)"; border = S.accent; color = S.accent; }
-            } else if (selected === i) { bg = "#eef3ff"; border = S.accent3; color = S.accent3; }
+            } else if (selected === i) { bg = "var(--block-b-bg)"; border = S.accent3; color = S.accent3; }
             return (
               <button key={i} onClick={() => !result && setSelected(i)} style={{
                 background: bg, border: `1px solid ${border}`, borderRadius: 8, padding: "12px 16px",
@@ -305,7 +305,7 @@ function QuizSection({ onAnswer }: { onAnswer: (questionId: string, correct: boo
 
         {/* Explanation */}
         {result && (
-          <div style={{ marginTop: 20, padding: "16px 20px", background: result.correct ? "var(--pass-bg)" : "var(--fail-bg)", borderRadius: 8, border: `1px solid ${result.correct ? "#b8e8cc" : "#f5c4bc"}` }}>
+          <div style={{ marginTop: 20, padding: "16px 20px", background: result.correct ? "var(--pass-bg)" : "var(--fail-bg)", borderRadius: 8, border: `1px solid ${result.correct ? "var(--block-g-border)" : "var(--block-c-border)"}` }}>
             <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: result.correct ? S.accent2 : S.accent, marginBottom: 8 }}>
               {result.correct ? "✓ Correct!" : "✗ Not quite."}
             </div>
@@ -336,16 +336,16 @@ function QuizSection({ onAnswer }: { onAnswer: (questionId: string, correct: boo
 function KernelDiagram() {
   const layers = [
     { label: "User Space", sub: "Your app lives here", blocks: [["c", "nginx process"], ["g", "python app"], ["b", "redis-server"], ["v", "your code"]] },
-    { label: "Namespaces", sub: "What you can see", style: { background: "#fff8f6" }, blocks: [["c", "pid ns → own process tree"], ["c", "net ns → own network stack"], ["c", "mnt ns → own filesystem view"], ["c", "uts ns → own hostname"], ["c", "ipc ns → own IPC resources"], ["c", "user ns → own UID/GID mapping"]] },
-    { label: "cgroups v2", sub: "What you can use", style: { background: "#f0fff6" }, blocks: [["g", "cpu.max → CPU throttle"], ["g", "memory.max → RAM cap"], ["g", "blkio → disk I/O limit"], ["g", "pids.max → process count"], ["g", "net_cls → network priority"]] },
-    { label: "seccomp / LSM", sub: "What you can do", style: { background: "#f5f0ff" }, blocks: [["v", "seccomp-bpf → syscall filter"], ["v", "AppArmor / SELinux → MAC"], ["v", "capabilities → drop root"]] },
-    { label: "Linux Kernel", sub: "syscalls, VFS, TCP/IP", style: { background: "#eef3ff" }, blocks: [["b", "clone()"], ["b", "unshare()"], ["b", "setns()"], ["b", "pivot_root()"], ["b", "mount()"], ["b", "seccomp()"]] },
+    { label: "Namespaces", sub: "What you can see", style: { background: "var(--layer-ns-bg)" }, blocks: [["c", "pid ns → own process tree"], ["c", "net ns → own network stack"], ["c", "mnt ns → own filesystem view"], ["c", "uts ns → own hostname"], ["c", "ipc ns → own IPC resources"], ["c", "user ns → own UID/GID mapping"]] },
+    { label: "cgroups v2", sub: "What you can use", style: { background: "var(--layer-cg-bg)" }, blocks: [["g", "cpu.max → CPU throttle"], ["g", "memory.max → RAM cap"], ["g", "blkio → disk I/O limit"], ["g", "pids.max → process count"], ["g", "net_cls → network priority"]] },
+    { label: "seccomp / LSM", sub: "What you can do", style: { background: "var(--layer-sec-bg)" }, blocks: [["v", "seccomp-bpf → syscall filter"], ["v", "AppArmor / SELinux → MAC"], ["v", "capabilities → drop root"]] },
+    { label: "Linux Kernel", sub: "syscalls, VFS, TCP/IP", style: { background: "var(--block-b-bg)" }, blocks: [["b", "clone()"], ["b", "unshare()"], ["b", "setns()"], ["b", "pivot_root()"], ["b", "mount()"], ["b", "seccomp()"]] },
   ];
   const blockColors: Record<string, { bg: string; border: string; color: string }> = {
-    c: { bg: "var(--fail-bg)", border: "#f5c4bc", color: S.accent },
-    g: { bg: "var(--pass-bg)", border: "#b8e8cc", color: S.accent2 },
-    b: { bg: "#eef3ff", border: "#b8ccf5", color: S.accent3 },
-    v: { bg: "#f3eeff", border: "#d0b8f5", color: S.accent4 },
+    c: { bg: "var(--fail-bg)", border: "var(--block-c-border)", color: S.accent },
+    g: { bg: "var(--pass-bg)", border: "var(--block-g-border)", color: S.accent2 },
+    b: { bg: "var(--block-b-bg)", border: "var(--block-b-border)", color: S.accent3 },
+    v: { bg: "var(--block-v-bg)", border: "var(--block-v-border)", color: S.accent4 },
   };
   return (
     <div style={{ border: `1px solid ${S.border}`, borderRadius: 8, overflow: "hidden" }}>
@@ -370,7 +370,7 @@ function KernelDiagram() {
 /* ─── K8s Cluster Visual ─── */
 function ClusterVisual() {
   return (
-    <div style={{ border: `2px dashed ${S.accent3}`, borderRadius: 16, padding: 28, background: "#f5f8ff", margin: "24px 0" }}>
+    <div style={{ border: `2px dashed ${S.accent3}`, borderRadius: 16, padding: 28, background: "var(--cluster-bg)", margin: "24px 0" }}>
       <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.accent3, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 16 }}>☸ Kubernetes Cluster</div>
 
       <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", color: S.accent3, fontWeight: 700, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>Control Plane</div>
@@ -381,9 +381,9 @@ function ClusterVisual() {
           { title: "kube-scheduler", comps: ["Pod → Node binding", "Filters + Scorers", "Watches unbound pods"], note: "Watches for pods with no nodeName. Scores nodes. Writes nodeName to etcd." },
           { title: "controller-manager", comps: ["ReplicaSet controller", "Deployment controller", "Node controller"], note: "~30 controllers in one binary, each running its own reconciliation loop." },
         ].map((node, i) => (
-          <div key={i} style={{ flex: 1, minWidth: 180, background: S.paper, border: `1px solid #b8ccf5`, borderRadius: 10, padding: 16 }}>
-            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.accent3, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid #d8e4fc" }}>{node.title}</div>
-            {node.comps.map((c, j) => <div key={j} style={{ fontSize: "0.7rem", padding: "5px 10px", marginBottom: 6, borderRadius: 4, background: "#eef3ff", border: "1px solid #d0dcf8", color: S.accent3, fontFamily: "'JetBrains Mono',monospace" }}>{c}</div>)}
+          <div key={i} style={{ flex: 1, minWidth: 180, background: S.paper, border: `1px solid var(--block-b-border)`, borderRadius: 10, padding: 16 }}>
+            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.accent3, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid var(--cluster-node-border1-inner)" }}>{node.title}</div>
+            {node.comps.map((c, j) => <div key={j} style={{ fontSize: "0.7rem", padding: "5px 10px", marginBottom: 6, borderRadius: 4, background: "var(--block-b-bg)", border: "1px solid var(--cluster-node-border1-alt)", color: S.accent3, fontFamily: "'JetBrains Mono',monospace" }}>{c}</div>)}
             <div style={{ fontSize: "0.72rem", color: S.ink3, marginTop: 8 }}>{node.note}</div>
           </div>
         ))}
@@ -392,13 +392,13 @@ function ClusterVisual() {
       <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", color: S.accent2, fontWeight: 700, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>Worker Nodes</div>
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
         {[
-          { title: "kubelet", comps: ["Node agent", "Pod lifecycle via CRI", "Reports node status"], extra: <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}><div style={{ background: "var(--pass-bg)", border: "1px solid #a8dcbc", borderRadius: 6, padding: "6px 12px", fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", color: S.accent2 }}>pod: nginx</div><div style={{ background: "var(--pass-bg)", border: "1px solid #a8dcbc", borderRadius: 6, padding: "6px 12px", fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", color: S.accent2 }}>pod: api</div></div> },
+          { title: "kubelet", comps: ["Node agent", "Pod lifecycle via CRI", "Reports node status"], extra: <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}><div style={{ background: "var(--pass-bg)", border: "1px solid var(--cluster-node-border2-alt)", borderRadius: 6, padding: "6px 12px", fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", color: S.accent2 }}>pod: nginx</div><div style={{ background: "var(--pass-bg)", border: "1px solid var(--cluster-node-border2-alt)", borderRadius: 6, padding: "6px 12px", fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", color: S.accent2 }}>pod: api</div></div> },
           { title: "kube-proxy", comps: ["Service networking", "iptables / IPVS rules", "Load balancing"], note: "Programs iptables/IPVS to route ClusterIP traffic to pod endpoints." },
           { title: "container runtime", comps: ["containerd (CRI)", "runc (OCI)", "Same as standalone Docker"], note: "The exact same stack as Docker — kubelet just calls containerd's gRPC API directly." },
         ].map((node, i) => (
-          <div key={i} style={{ flex: 1, minWidth: 180, background: S.paper, border: `1px solid #b8e8cc`, borderRadius: 10, padding: 16 }}>
-            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.accent2, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid #c8e8d8" }}>{node.title}</div>
-            {node.comps.map((c, j) => <div key={j} style={{ fontSize: "0.7rem", padding: "5px 10px", marginBottom: 6, borderRadius: 4, background: "var(--pass-bg)", border: "1px solid #b8e8cc", color: S.accent2, fontFamily: "'JetBrains Mono',monospace" }}>{c}</div>)}
+          <div key={i} style={{ flex: 1, minWidth: 180, background: S.paper, border: `1px solid var(--block-g-border)`, borderRadius: 10, padding: 16 }}>
+            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.accent2, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid var(--cluster-node-border2-inner)" }}>{node.title}</div>
+            {node.comps.map((c, j) => <div key={j} style={{ fontSize: "0.7rem", padding: "5px 10px", marginBottom: 6, borderRadius: 4, background: "var(--pass-bg)", border: "1px solid var(--block-g-border)", color: S.accent2, fontFamily: "'JetBrains Mono',monospace" }}>{c}</div>)}
             {(node as any).note && <div style={{ fontSize: "0.72rem", color: S.ink3, marginTop: 8 }}>{(node as any).note}</div>}
             {(node as any).extra}
           </div>
@@ -415,7 +415,7 @@ function Timeline({ items }: { items: { title: string; body: string }[] }) {
       <div style={{ position: "absolute", left: 12, top: 0, bottom: 0, width: 2, background: S.border }} />
       {items.map((item, i) => (
         <div key={i} style={{ position: "relative", marginBottom: 36 }}>
-          <div style={{ position: "absolute", left: -32, top: 6, width: 10, height: 10, borderRadius: "50%", background: S.accent, border: `2px solid white`, boxShadow: `0 0 0 2px ${S.accent}` }} />
+          <div style={{ position: "absolute", left: -32, top: 6, width: 10, height: 10, borderRadius: "50%", background: S.accent, border: `2px solid ${S.paper}`, boxShadow: `0 0 0 2px ${S.accent}` }} />
           <h4 style={{ fontSize: "0.95rem", fontWeight: 600, color: S.ink, marginBottom: 6, fontFamily: "'DM Sans',sans-serif", textTransform: "none" }}>{item.title}</h4>
           <p style={{ fontSize: "0.88rem", color: S.ink3, margin: 0 }}>{item.body}</p>
         </div>
@@ -501,7 +501,7 @@ export default function Home() {
         .liquid-nav::before { content:''; position:absolute; inset:0; border-radius:50px; background:linear-gradient(105deg,rgba(255,255,255,0.55) 0%,rgba(255,255,255,0.08) 45%,rgba(255,255,255,0.5) 100%); pointer-events:none; z-index:1; }
         .liquid-nav::after { content:''; position:absolute; inset:0; border-radius:50px; background:linear-gradient(180deg,rgba(255,255,255,0.55) 0%,transparent 55%); pointer-events:none; z-index:1; }
         .nav-link-pill { position:relative; z-index:2; transition:color 0.2s, opacity 0.2s !important; }
-        .nav-link-pill:hover { color:#c84b31 !important; opacity:0.85; }
+        .nav-link-pill:hover { color:var(--accent) !important; opacity:0.85; }
         .nav-logo-btn { cursor:pointer; transition:all 0.2s !important; }
         .nav-logo-btn:hover { opacity:0.7; transform:scale(0.97) !important; }
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
@@ -530,14 +530,14 @@ export default function Home() {
           style={{
             fontFamily: "'Fraunces',serif", fontSize: "1rem", fontWeight: 700,
             letterSpacing: "-0.02em", background: "none", border: "none",
-            color: "#0f0f0f", padding: "0 8px 0 0", marginRight: 4,
+            color: "var(--ink)", padding: "0 8px 0 0", marginRight: 4,
             flexShrink: 0, position: "relative", zIndex: 2,
           }}
         >
-          Docker<span style={{ color: "#c84b31" }}>&amp;</span>K8s
+          Docker<span style={{ color: "var(--accent)" }}>&amp;</span>K8s
         </button>
 
-        <div style={{ width: 1, height: 18, background: "rgba(0,0,0,0.13)", flexShrink: 0, position: "relative", zIndex: 2 }} />
+        <div style={{ width: 1, height: 18, background: "var(--border-alpha)", flexShrink: 0, position: "relative", zIndex: 2 }} />
 
         {/* Section links */}
         <div style={{ display: "flex", gap: 2, alignItems: "center", flex: 1, position: "relative", zIndex: 2 }}>
@@ -545,7 +545,7 @@ export default function Home() {
             <a key={s.id} href={`#${s.id}`} className="nav-link-pill" style={{
               fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase",
               textDecoration: "none",
-              color: progress.sections.includes(s.id) ? "#333" : "#666",
+              color: progress.sections.includes(s.id) ? "var(--ink)" : "var(--ink3)",
               padding: "4px 9px", borderRadius: 6,
               background: "transparent",
               fontFamily: "'JetBrains Mono',monospace",
@@ -557,7 +557,7 @@ export default function Home() {
           ))}
         </div>
 
-        <div style={{ width: 1, height: 18, background: "rgba(0,0,0,0.13)", flexShrink: 0, position: "relative", zIndex: 2 }} />
+        <div style={{ width: 1, height: 18, background: "var(--border-alpha)", flexShrink: 0, position: "relative", zIndex: 2 }} />
 
         {/* Search */}
         <div style={{ position: "relative", zIndex: 2, paddingLeft: 8 }}>
@@ -572,12 +572,12 @@ export default function Home() {
 
       {/* Scroll progress line */}
       <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, height: 3, pointerEvents: "none" }}>
-        <div style={{ height: "100%", background: "linear-gradient(90deg, #c84b31, #e87c5a)", width: `${scrollPct}%`, transition: "width 0.1s linear", borderRadius: "0 2px 2px 0" }} />
+        <div style={{ height: "100%", background: "linear-gradient(90deg, var(--accent), var(--accent-glow))", width: `${scrollPct}%`, transition: "width 0.1s linear", borderRadius: "0 2px 2px 0" }} />
       </div>
 
       {/* HERO */}
       <section style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "120px 80px 80px", position: "relative", overflow: "hidden", border: "none" }}>
-        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: "linear-gradient(#d8d8cc 1px, transparent 1px), linear-gradient(90deg, #d8d8cc 1px, transparent 1px)", backgroundSize: "60px 60px", opacity: 0.4 }} />
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: "linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)", backgroundSize: "60px 60px", opacity: 0.4 }} />
         <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.1em", color: S.accent, textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
           <span style={{ width: 32, height: 2, background: S.accent, display: "block" }} />
           Deep Architecture · Feynman Edition
@@ -625,14 +625,14 @@ export default function Home() {
             <H3>cgroups v2 — "What You Can Use"</H3>
             <p style={{ color: S.ink2 }}>Control groups enforce resource accounting and limits. The cgroup hierarchy is exposed via a virtual filesystem at <code style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.82em", background: S.paper3, padding: "2px 7px", borderRadius: 3, color: S.accent }}>/sys/fs/cgroup/</code>. Every container gets its own subtree.</p>
             <CodeBlock label="Inspect a container's cgroup limits">
-              {`<span style="color:#6c7086"># Find container's cgroup path</span>
-<span style="color:#89b4fa">cat /proc/$(docker inspect \\
+              {`<span style="color:var(--sh-comment)"># Find container's cgroup path</span>
+<span style="color:var(--sh-func)">cat /proc/$(docker inspect \\
   --format='{{.State.Pid}}' nginx)/cgroup</span>
 
-<span style="color:#6c7086"># Read memory limit directly</span>
-<span style="color:#89b4fa">cat /sys/fs/cgroup/system.slice/\\
+<span style="color:var(--sh-comment)"># Read memory limit directly</span>
+<span style="color:var(--sh-func)">cat /sys/fs/cgroup/system.slice/\\
   docker-&lt;id&gt;.scope/memory.max</span>
-<span style="color:#6c7086"># → 268435456 (256MB)</span>`}
+<span style="color:var(--sh-comment)"># → 268435456 (256MB)</span>`}
             </CodeBlock>
           </div>
         </div>
@@ -648,11 +648,11 @@ export default function Home() {
           <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: S.ink3, marginBottom: 32 }}>Docker Component Stack — Who Calls Who</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 0, maxWidth: 700 }}>
             {[
-              { emoji: "🖥️", color: S.accent, bg: "var(--active-bg)", border: "#f5c4bc", title: "docker CLI", desc: "REST API calls to Docker daemon over Unix socket", sep: "↓ HTTP REST /var/run/docker.sock" },
-              { emoji: "⚙️", color: "#b06000", bg: "#fff8ee", border: "#f5dcb8", title: "dockerd (Docker Daemon)", desc: "Image management, network, volumes, build cache. Delegates container lifecycle to containerd.", sep: "↓ gRPC /run/containerd/containerd.sock" },
-              { emoji: "📦", color: "#7a6000", bg: "var(--run-bg)", border: "#f5e4a0", title: "containerd", desc: "Industry-standard container runtime. Pulls images, manages snapshots, creates containers via shim.", sep: "↓ OCI Runtime Spec exec()" },
-              { emoji: "🔧", color: S.accent3, bg: "#eef5ff", border: "#b8ccf5", title: "runc (OCI Runtime)", desc: "Calls clone(), mount(), pivot_root(), execve(). Sets up namespaces + cgroups. Then exits.", sep: "↓ Linux syscalls" },
-              { emoji: "🐧", color: S.accent2, bg: "var(--pass-bg)", border: "#b8e8cc", title: "Linux Kernel", desc: "Namespaces + cgroups + OverlayFS. The actual isolation happens here.", sep: null },
+              { emoji: "🖥️", color: S.accent, bg: "var(--active-bg)", border: "var(--block-c-border)", title: "docker CLI", desc: "REST API calls to Docker daemon over Unix socket", sep: "↓ HTTP REST /var/run/docker.sock" },
+              { emoji: "⚙️", color: "var(--dock-2-color)", bg: "var(--dock-2-bg)", border: "var(--dock-2-border)", title: "dockerd (Docker Daemon)", desc: "Image management, network, volumes, build cache. Delegates container lifecycle to containerd.", sep: "↓ gRPC /run/containerd/containerd.sock" },
+              { emoji: "📦", color: "var(--dock-3-color)", bg: "var(--run-bg)", border: "var(--dock-3-border)", title: "containerd", desc: "Industry-standard container runtime. Pulls images, manages snapshots, creates containers via shim.", sep: "↓ OCI Runtime Spec exec()" },
+              { emoji: "🔧", color: S.accent3, bg: "var(--dock-4-bg)", border: "var(--block-b-border)", title: "runc (OCI Runtime)", desc: "Calls clone(), mount(), pivot_root(), execve(). Sets up namespaces + cgroups. Then exits.", sep: "↓ Linux syscalls" },
+              { emoji: "🐧", color: S.accent2, bg: "var(--pass-bg)", border: "var(--block-g-border)", title: "Linux Kernel", desc: "Namespaces + cgroups + OverlayFS. The actual isolation happens here.", sep: null },
             ].map((layer, i) => (
               <div key={i}>
                 <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 20px", background: layer.bg, border: `1px solid ${layer.border}`, borderRadius: i === 0 ? "8px 8px 0 0" : i === 4 ? "0 0 8px 8px" : 0, borderTop: i > 0 ? "none" : undefined }}>
@@ -688,11 +688,11 @@ export default function Home() {
                   <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: S.ink3, marginBottom: 32 }}>OverlayFS Mount Structure</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 0, maxWidth: 600 }}>
                     {[
-                      { bg: "var(--pass-bg)", border: "#b8e8cc", color: S.accent2, title: "merged/ (container view)", sub: "What the container sees — unified view of all layers", r: "8px 8px 0 0", op: 1 },
-                      { bg: "#fff8ee", border: "#f5dcb8", color: "#b06000", title: "upperdir/ (container layer)", sub: 'Writable. New files written here. Deleted files marked with "whiteout" entries.', r: 0, op: 1 },
-                      { bg: "#eef3ff", border: "#b8ccf5", color: S.accent3, title: "lowerdir[n] — Image Layer N (top)", sub: "Read-only. e.g. your app code COPY", r: 0, op: 1 },
-                      { bg: "#eef3ff", border: "#b8ccf5", color: S.accent3, title: "lowerdir[n-1] — Image Layer N-1", sub: "Read-only. e.g. apt-get install packages", r: 0, op: 0.85 },
-                      { bg: "#eef3ff", border: "#b8ccf5", color: S.accent3, title: "lowerdir[0] — Base Image Layer", sub: "e.g. ubuntu:22.04 filesystem", r: "0 0 8px 8px", op: 0.65 },
+                      { bg: "var(--pass-bg)", border: "var(--block-g-border)", color: S.accent2, title: "merged/ (container view)", sub: "What the container sees — unified view of all layers", r: "8px 8px 0 0", op: 1 },
+                      { bg: "var(--dock-2-bg)", border: "var(--dock-2-border)", color: "var(--dock-2-color)", title: "upperdir/ (container layer)", sub: 'Writable. New files written here. Deleted files marked with "whiteout" entries.', r: 0, op: 1 },
+                      { bg: "var(--block-b-bg)", border: "var(--block-b-border)", color: S.accent3, title: "lowerdir[n] — Image Layer N (top)", sub: "Read-only. e.g. your app code COPY", r: 0, op: 1 },
+                      { bg: "var(--block-b-bg)", border: "var(--block-b-border)", color: S.accent3, title: "lowerdir[n-1] — Image Layer N-1", sub: "Read-only. e.g. apt-get install packages", r: 0, op: 0.85 },
+                      { bg: "var(--block-b-bg)", border: "var(--block-b-border)", color: S.accent3, title: "lowerdir[0] — Base Image Layer", sub: "e.g. ubuntu:22.04 filesystem", r: "0 0 8px 8px", op: 0.65 },
                     ].map((layer, i) => (
                       <div key={i} style={{ padding: "14px 20px", background: layer.bg, border: `1px solid ${layer.border}`, borderTop: i > 0 ? "none" : undefined, borderRadius: layer.r, fontFamily: "'JetBrains Mono',monospace", fontSize: "0.8rem", opacity: layer.op }}>
                         <strong style={{ color: layer.color }}>{layer.title}</strong><br />
@@ -711,24 +711,24 @@ export default function Home() {
               <div>
                 <p style={{ color: S.ink2 }}>Each instruction in a Dockerfile produces exactly one layer. The build context is sent to dockerd. BuildKit parallelizes independent build stages and uses a content-addressable cache.</p>
                 <CodeBlock label="What each Dockerfile instruction actually does">
-                  {`<span style="color:#6c7086"># Layer 1: FROM — pull base image, set lowerdir stack</span>
-<span style="color:#cba6f7">FROM</span> <span style="color:#a6e3a1">python:3.12-slim</span>
+                  {`<span style="color:var(--sh-comment)"># Layer 1: FROM — pull base image, set lowerdir stack</span>
+<span style="color:var(--sh-kw)">FROM</span> <span style="color:var(--sh-str)">python:3.12-slim</span>
 
-<span style="color:#6c7086"># Layer 2: RUN — executes in a temp container,
+<span style="color:var(--sh-comment)"># Layer 2: RUN — executes in a temp container,
 # commits resulting filesystem diff as a new layer</span>
-<span style="color:#cba6f7">RUN</span> <span style="color:#89b4fa">apt-get update && apt-get install -y libpq-dev</span>
+<span style="color:var(--sh-kw)">RUN</span> <span style="color:var(--sh-func)">apt-get update && apt-get install -y libpq-dev</span>
 
-<span style="color:#6c7086"># Layer 3: COPY — adds files using SHA256 content addressing</span>
-<span style="color:#cba6f7">COPY</span> requirements.txt /app/
+<span style="color:var(--sh-comment)"># Layer 3: COPY — adds files using SHA256 content addressing</span>
+<span style="color:var(--sh-kw)">COPY</span> requirements.txt /app/
 
-<span style="color:#6c7086"># Layer 4: cached if requirements.txt SHA256 unchanged!</span>
-<span style="color:#cba6f7">RUN</span> <span style="color:#89b4fa">pip install -r /app/requirements.txt</span>
+<span style="color:var(--sh-comment)"># Layer 4: cached if requirements.txt SHA256 unchanged!</span>
+<span style="color:var(--sh-kw)">RUN</span> <span style="color:var(--sh-func)">pip install -r /app/requirements.txt</span>
 
-<span style="color:#6c7086"># Layer 5: COPY app code — changes often, so put LAST</span>
-<span style="color:#cba6f7">COPY</span> . /app/
+<span style="color:var(--sh-comment)"># Layer 5: COPY app code — changes often, so put LAST</span>
+<span style="color:var(--sh-kw)">COPY</span> . /app/
 
-<span style="color:#cba6f7">EXPOSE</span> <span style="color:#fab387">8000</span>
-<span style="color:#cba6f7">CMD</span> [<span style="color:#a6e3a1">"uvicorn"</span>, <span style="color:#a6e3a1">"main:app"</span>, <span style="color:#a6e3a1">"--host"</span>, <span style="color:#a6e3a1">"0.0.0.0"</span>]`}
+<span style="color:var(--sh-kw)">EXPOSE</span> <span style="color:var(--sh-num)">8000</span>
+<span style="color:var(--sh-kw)">CMD</span> [<span style="color:var(--sh-str)">"uvicorn"</span>, <span style="color:var(--sh-str)">"main:app"</span>, <span style="color:var(--sh-str)">"--host"</span>, <span style="color:var(--sh-str)">"0.0.0.0"</span>]`}
                 </CodeBlock>
               </div>
             )
@@ -739,19 +739,19 @@ export default function Home() {
               <div>
                 <p style={{ color: S.ink2 }}>Multi-stage builds solve a fundamental problem: build tools (gcc, pip, Maven) must not ship in production images. Multiple <code style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.82em", background: S.paper3, padding: "2px 7px", borderRadius: 3, color: S.accent }}>FROM</code> statements — only the final stage ships.</p>
                 <CodeBlock label="Multi-stage: 900MB → ~120MB">
-                  {`<span style="color:#6c7086"># STAGE 1: Builder — has ALL build deps</span>
-<span style="color:#cba6f7">FROM</span> <span style="color:#a6e3a1">python:3.12</span> AS builder
-<span style="color:#cba6f7">WORKDIR</span> /build
-<span style="color:#cba6f7">COPY</span> requirements.txt .
-<span style="color:#cba6f7">RUN</span> <span style="color:#89b4fa">pip install --prefix=/install -r requirements.txt</span>
+                  {`<span style="color:var(--sh-comment)"># STAGE 1: Builder — has ALL build deps</span>
+<span style="color:var(--sh-kw)">FROM</span> <span style="color:var(--sh-str)">python:3.12</span> AS builder
+<span style="color:var(--sh-kw)">WORKDIR</span> /build
+<span style="color:var(--sh-kw)">COPY</span> requirements.txt .
+<span style="color:var(--sh-kw)">RUN</span> <span style="color:var(--sh-func)">pip install --prefix=/install -r requirements.txt</span>
 
-<span style="color:#6c7086"># STAGE 2: Production — only runtime</span>
-<span style="color:#cba6f7">FROM</span> <span style="color:#a6e3a1">python:3.12-slim</span>
-<span style="color:#6c7086"># Only copy compiled artifacts — no pip, no gcc</span>
-<span style="color:#cba6f7">COPY</span> --from=builder /install /usr/local
-<span style="color:#cba6f7">COPY</span> --from=builder /build/app /app
+<span style="color:var(--sh-comment)"># STAGE 2: Production — only runtime</span>
+<span style="color:var(--sh-kw)">FROM</span> <span style="color:var(--sh-str)">python:3.12-slim</span>
+<span style="color:var(--sh-comment)"># Only copy compiled artifacts — no pip, no gcc</span>
+<span style="color:var(--sh-kw)">COPY</span> --from=builder /install /usr/local
+<span style="color:var(--sh-kw)">COPY</span> --from=builder /build/app /app
 
-<span style="color:#6c7086"># No build tools in final image ✓
+<span style="color:var(--sh-comment)"># No build tools in final image ✓
 # Trivy has far less attack surface to scan ✓
 # Image push/pull is 7x faster ✓</span>`}
                 </CodeBlock>
@@ -764,14 +764,14 @@ export default function Home() {
               <div>
                 <FeynmanBox>Layer cache is a <strong>Merkle tree</strong>. Each node&apos;s identity is derived from its content AND its parents. Change anything upstream, and the entire subtree gets a new identity — exactly like Git commits.</FeynmanBox>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-                  <div style={{ background: "var(--fail-bg)", border: `1px solid #f5c4bc`, borderRadius: 8, padding: 20 }}>
+                  <div style={{ background: "var(--fail-bg)", border: `1px solid var(--block-c-border)`, borderRadius: 8, padding: 20 }}>
                     <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.accent, marginBottom: 12 }}>❌ BAD ORDER — slow builds</div>
                     <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.78rem", color: S.ink2, lineHeight: 1.8 }}>
                       COPY . /app/<br />RUN pip install ...<br />
                       <span style={{ color: S.accent, fontSize: "0.68rem" }}>Every code change invalidates pip layer</span>
                     </div>
                   </div>
-                  <div style={{ background: "var(--pass-bg)", border: `1px solid #b8e8cc`, borderRadius: 8, padding: 20 }}>
+                  <div style={{ background: "var(--pass-bg)", border: `1px solid var(--block-g-border)`, borderRadius: 8, padding: 20 }}>
                     <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.accent2, marginBottom: 12 }}>✓ GOOD ORDER — fast builds</div>
                     <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.78rem", color: S.ink2, lineHeight: 1.8 }}>
                       COPY requirements.txt .<br />RUN pip install ...<br />COPY . /app/<br />
@@ -816,11 +816,11 @@ export default function Home() {
           <p style={{ color: S.ink2 }}>etcd exposes a Watch gRPC stream. Clients subscribe to a key prefix with a resource version. etcd maintains a compacted change history (MVCC). When a resource changes, all watchers get notified with the delta.</p>
           <p style={{ color: S.ink2 }}>The kube-apiserver aggregates these watches and re-exposes them as Kubernetes informers. Informers have a local in-memory cache (store) + an event queue. Controllers consume from this queue rather than calling the API on every reconcile — this is the List-Watch pattern.</p>
           <CodeBlock label="Watching resources at the API level">
-            {`<span style="color:#6c7086"># Watch pod events as they happen</span>
-<span style="color:#89b4fa">kubectl get pods --watch -o json</span>
+            {`<span style="color:var(--sh-comment)"># Watch pod events as they happen</span>
+<span style="color:var(--sh-func)">kubectl get pods --watch -o json</span>
 
-<span style="color:#6c7086"># Watch etcd directly (requires etcd client)</span>
-<span style="color:#89b4fa">etcdctl watch /registry/pods/default --prefix</span>`}
+<span style="color:var(--sh-comment)"># Watch etcd directly (requires etcd client)</span>
+<span style="color:var(--sh-func)">etcdctl watch /registry/pods/default --prefix</span>`}
           </CodeBlock>
         </ConceptCard>
         <ConceptCard title="Services, ClusterIP and iptables — The magic of virtual IPs">
@@ -830,8 +830,8 @@ export default function Home() {
         <ConceptCard title="Rolling Updates — Zero-downtime deployment mechanics">
           <p style={{ color: S.ink2 }}>A rolling update creates a new ReplicaSet with the updated pod template, gradually scaling it up while scaling down the old one. <code style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.82em", background: S.paper3, padding: "2px 7px", borderRadius: 3, color: S.accent }}>maxUnavailable: 0</code> means no pods can be unavailable — the old pod is only killed after the new pod passes its readinessProbe. That&apos;s zero-downtime.</p>
           <CodeBlock label="Watch rolling update in real-time">
-            {`<span style="color:#89b4fa">kubectl rollout status deployment/my-app</span>
-<span style="color:#6c7086"># 1 out of 3 new replicas have been updated...
+            {`<span style="color:var(--sh-func)">kubectl rollout status deployment/my-app</span>
+<span style="color:var(--sh-comment)"># 1 out of 3 new replicas have been updated...
 # 2 out of 3 new replicas have been updated...
 # deployment "my-app" successfully rolled out</span>`}
           </CodeBlock>
@@ -895,27 +895,27 @@ export default function Home() {
 
         <H3 mt={48}>Prometheus PromQL — The Language of Metrics</H3>
         <CodeBlock label="Production-grade alerting rules (PrometheusRule)">
-          {`<span style="color:#6c7086"># API error rate > 1% over 5 minutes → PagerDuty</span>
-<span style="color:#cba6f7">alert</span>: HighErrorRate
-<span style="color:#cba6f7">expr</span>: |
-  sum(rate(http_requests_total{status=~<span style="color:#a6e3a1">"5.."</span>}[<span style="color:#fab387">5m</span>])) by (service)
+          {`<span style="color:var(--sh-comment)"># API error rate > 1% over 5 minutes → PagerDuty</span>
+<span style="color:var(--sh-kw)">alert</span>: HighErrorRate
+<span style="color:var(--sh-kw)">expr</span>: |
+  sum(rate(http_requests_total{status=~<span style="color:var(--sh-str)">"5.."</span>}[<span style="color:var(--sh-num)">5m</span>])) by (service)
   /
-  sum(rate(http_requests_total[<span style="color:#fab387">5m</span>])) by (service)
-  > <span style="color:#fab387">0.01</span>
-<span style="color:#cba6f7">for</span>: <span style="color:#fab387">2m</span>  <span style="color:#6c7086"># must be true for 2 min (avoid flaps)</span>
-<span style="color:#cba6f7">labels</span>:
+  sum(rate(http_requests_total[<span style="color:var(--sh-num)">5m</span>])) by (service)
+  > <span style="color:var(--sh-num)">0.01</span>
+<span style="color:var(--sh-kw)">for</span>: <span style="color:var(--sh-num)">2m</span>  <span style="color:var(--sh-comment)"># must be true for 2 min (avoid flaps)</span>
+<span style="color:var(--sh-kw)">labels</span>:
   severity: critical
 
-<span style="color:#6c7086"># p95 latency degradation</span>
-<span style="color:#cba6f7">alert</span>: SlowRequests
-<span style="color:#cba6f7">expr</span>: |
-  histogram_quantile(<span style="color:#fab387">0.95</span>,
-    sum(rate(http_request_duration_seconds_bucket[<span style="color:#fab387">5m</span>])) by (le, service)
-  ) > <span style="color:#fab387">0.5</span>  <span style="color:#6c7086"># 500ms SLO</span>`}
+<span style="color:var(--sh-comment)"># p95 latency degradation</span>
+<span style="color:var(--sh-kw)">alert</span>: SlowRequests
+<span style="color:var(--sh-kw)">expr</span>: |
+  histogram_quantile(<span style="color:var(--sh-num)">0.95</span>,
+    sum(rate(http_request_duration_seconds_bucket[<span style="color:var(--sh-num)">5m</span>])) by (le, service)
+  ) > <span style="color:var(--sh-num)">0.5</span>  <span style="color:var(--sh-comment)"># 500ms SLO</span>`}
         </CodeBlock>
 
         {/* Final mental model */}
-        <div style={{ marginTop: 64, background: "linear-gradient(135deg, #fff5f3 0%, #f5f8ff 100%)", border: `1px solid ${S.border}`, borderRadius: 16, padding: 48 }}>
+        <div style={{ marginTop: 64, background: "linear-gradient(135deg, var(--dock-1-bg) 0%, var(--cluster-bg) 100%)", border: `1px solid ${S.border}`, borderRadius: 16, padding: 48 }}>
           <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: S.accent, marginBottom: 20 }}>⚡ The Complete Mental Model</div>
           <H3>From git push to Prometheus alert — The Unified Picture</H3>
           <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", margin: "24px 0" }}>

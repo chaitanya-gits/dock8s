@@ -24,6 +24,39 @@
   --active-bg: #fff5f3;
   --kopied-bg: rgba(255,255,255,0.1);
   --search-bg: rgba(255,255,255,0.6);
+
+  --accent-glow: #e87c5a;
+  --layer-ns-bg: #fff8f6;
+  --layer-cg-bg: #f0fff6;
+  --layer-sec-bg: #f5f0ff;
+  --block-c-bg: #fff0ee;
+  --block-c-border: #f5c4bc;
+  --block-g-bg: #edfaf3;
+  --block-g-border: #b8e8cc;
+  --block-b-bg: #eef3ff;
+  --block-b-border: #b8ccf5;
+  --block-v-bg: #f3eeff;
+  --block-v-border: #d0b8f5;
+  --cluster-bg: #f5f8ff;
+  --cluster-node-border1-inner: #d8e4fc;
+  --cluster-node-border1-alt: #d0dcf8;
+  --cluster-node-border2-inner: #c8e8d8;
+  --cluster-node-border2-alt: #a8dcbc;
+  --dock-1-bg: #fff5f3;
+  --dock-2-bg: #fff8ee;
+  --dock-2-border: #f5dcb8;
+  --dock-2-color: #b06000;
+  --dock-3-bg: #fffaee;
+  --dock-3-border: #f5e4a0;
+  --dock-3-color: #7a6000;
+  --dock-4-bg: #eef5ff;
+  --sh-comment: #6c7086;
+  --sh-func: #89b4fa;
+  --sh-kw: #cba6f7;
+  --sh-str: #a6e3a1;
+  --sh-num: #fab387;
+  --border-alpha: rgba(0,0,0,0.13);
+  --gradient-model: linear-gradient(135deg, #fff5f3 0%, #f5f8ff 100%);
 }
 
 :root[data-theme='dark'] {
@@ -53,6 +86,39 @@
   --active-bg: #2d1814;
   --kopied-bg: rgba(255,255,255,0.1);
   --search-bg: rgba(30,30,30,0.6);
+
+  --accent-glow: #ff8c69;
+  --layer-ns-bg: #2d1814;
+  --layer-cg-bg: #0f291c;
+  --layer-sec-bg: #22123f;
+  --block-c-bg: #331411;
+  --block-c-border: #803126;
+  --block-g-bg: #0f291c;
+  --block-g-border: #2c7a4d;
+  --block-b-bg: #14223f;
+  --block-b-border: #3b60af;
+  --block-v-bg: #22123f;
+  --block-v-border: #5b31a8;
+  --cluster-bg: #0d1424;
+  --cluster-node-border1-inner: #1a2d53;
+  --cluster-node-border1-alt: #233e73;
+  --cluster-node-border2-inner: #1b3829;
+  --cluster-node-border2-alt: #214f38;
+  --dock-1-bg: #2d1814;
+  --dock-2-bg: #2b1f11;
+  --dock-2-border: #8c5b20;
+  --dock-2-color: #f5dcb8;
+  --dock-3-bg: #2b2510;
+  --dock-3-border: #a18a28;
+  --dock-3-color: #f5e4a0;
+  --dock-4-bg: #14223f;
+  --sh-comment: #828a9b;
+  --sh-func: #a0c2ff;
+  --sh-kw: #dfc8ff;
+  --sh-str: #b2ebb5;
+  --sh-num: #ffd0ab;
+  --border-alpha: rgba(255,255,255,0.13);
+  --gradient-model: linear-gradient(135deg, #1b0c0a 0%, #0d1424 100%);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
