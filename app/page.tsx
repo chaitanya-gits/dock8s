@@ -49,7 +49,7 @@ function SearchBar() {
         placeholder="Search…"
         style={{
           width: "100%", padding: "5px 10px 5px 28px",
-          border: `1px solid rgba(0,0,0,0.13)`, borderRadius: 20,
+          border: `1px solid rgba(0,0,0,0.13)`, borderRadius: 4,
           fontFamily: "'JetBrains Mono', monospace", fontSize: "0.68rem",
           background: "rgba(255,255,255,0.6)", color: S.ink, outline: "none",
           backdropFilter: "blur(8px)",
@@ -515,14 +515,13 @@ export default function Home() {
             <a key={s.id} href={`#${s.id}`} className="nav-link-pill" style={{
               fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase",
               textDecoration: "none",
-              color: progress.sections.includes(s.id) ? "#1a6b4a" : "#666",
+              color: progress.sections.includes(s.id) ? "#333" : "#666",
               padding: "4px 9px", borderRadius: 6,
               background: "transparent",
               fontFamily: "'JetBrains Mono',monospace",
               display: "flex", alignItems: "center", gap: 3,
               transition: "color 0.2s",
             }}>
-              {progress.sections.includes(s.id) && <span style={{ fontSize: "0.45rem", color: "#1a6b4a", marginRight: 1 }}>●</span>}
               {s.title.split(" ")[0]}
             </a>
           ))}
