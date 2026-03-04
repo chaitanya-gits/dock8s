@@ -42,19 +42,23 @@ function SearchBar() {
   const typeLabels: Record<string, string> = { concept: "Concept", quiz: "Quiz", feynman: "💡 Insight" };
 
   return (
-    <div ref={ref} style={{ position: "relative", width: 280 }}>
+    <div ref={ref} style={{ position: "relative", width: 180 }}>
       <input
         value={query}
         onChange={e => setQuery(e.target.value)}
-        placeholder="Search concepts, syscalls…"
+        placeholder="Search…"
         style={{
-          width: "100%", padding: "7px 14px 7px 36px",
-          border: `1px solid ${S.border}`, borderRadius: 6,
-          fontFamily: "'JetBrains Mono', monospace", fontSize: "0.75rem",
-          background: "white", color: S.ink, outline: "none",
+          width: "100%", padding: "5px 10px 5px 28px",
+          border: `1px solid rgba(0,0,0,0.13)`, borderRadius: 20,
+          fontFamily: "'JetBrains Mono', monospace", fontSize: "0.68rem",
+          background: "rgba(255,255,255,0.6)", color: S.ink, outline: "none",
+          backdropFilter: "blur(8px)",
+          transition: "border 0.2s, width 0.3s",
         }}
+        onFocus={e => { e.currentTarget.style.border = `1px solid ${S.accent}`; }}
+        onBlur={e => { e.currentTarget.style.border = `1px solid rgba(0,0,0,0.13)`; }}
       />
-      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: S.ink3, fontSize: "0.85rem" }}>⌕</span>
+      <span style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: S.ink3, fontSize: "0.78rem", pointerEvents: "none" }}>⌕</span>
       {open && (
         <div style={{
           position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0,
@@ -466,8 +470,8 @@ export default function Home() {
         .liquid-nav { animation: navFloat 6s ease-in-out infinite, glassGlow 4s ease-in-out infinite; }
         .liquid-nav::before { content:''; position:absolute; inset:0; border-radius:50px; background:linear-gradient(105deg,rgba(255,255,255,0.55) 0%,rgba(255,255,255,0.08) 45%,rgba(255,255,255,0.5) 100%); pointer-events:none; z-index:1; }
         .liquid-nav::after { content:''; position:absolute; inset:0; border-radius:50px; background:linear-gradient(180deg,rgba(255,255,255,0.55) 0%,transparent 55%); pointer-events:none; z-index:1; }
-        .nav-link-pill { position:relative; z-index:2; transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1) !important; }
-        .nav-link-pill:hover { background:rgba(255,255,255,0.72) !important; transform:translateY(-1px) scale(1.05) !important; box-shadow:0 2px 10px rgba(0,0,0,0.09) !important; }
+        .nav-link-pill { position:relative; z-index:2; transition:color 0.2s, opacity 0.2s !important; }
+        .nav-link-pill:hover { color:#c84b31 !important; opacity:0.85; }
         .nav-logo-btn { cursor:pointer; transition:all 0.2s !important; }
         .nav-logo-btn:hover { opacity:0.7; transform:scale(0.97) !important; }
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
@@ -506,18 +510,19 @@ export default function Home() {
         <div style={{ width: 1, height: 18, background: "rgba(0,0,0,0.13)", flexShrink: 0, position: "relative", zIndex: 2 }} />
 
         {/* Section links */}
-        <div style={{ display: "flex", gap: 1, alignItems: "center", flex: 1, position: "relative", zIndex: 2 }}>
+        <div style={{ display: "flex", gap: 2, alignItems: "center", flex: 1, position: "relative", zIndex: 2 }}>
           {SECTIONS.map(s => (
             <a key={s.id} href={`#${s.id}`} className="nav-link-pill" style={{
-              fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase",
+              fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase",
               textDecoration: "none",
-              color: progress.sections.includes(s.id) ? "#1a6b4a" : "#555",
-              padding: "5px 10px", borderRadius: 30,
-              background: progress.sections.includes(s.id) ? "rgba(26,107,74,0.1)" : "transparent",
+              color: progress.sections.includes(s.id) ? "#1a6b4a" : "#666",
+              padding: "4px 9px", borderRadius: 6,
+              background: "transparent",
               fontFamily: "'JetBrains Mono',monospace",
               display: "flex", alignItems: "center", gap: 3,
+              transition: "color 0.2s",
             }}>
-              {progress.sections.includes(s.id) && <span style={{ fontSize: "0.5rem", color: "#1a6b4a" }}>●</span>}
+              {progress.sections.includes(s.id) && <span style={{ fontSize: "0.45rem", color: "#1a6b4a", marginRight: 1 }}>●</span>}
               {s.title.split(" ")[0]}
             </a>
           ))}
@@ -946,7 +951,7 @@ export default function Home() {
         {/* Orchestrated by row */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", color: S.ink3, letterSpacing: "0.04em" }}>Orchestrated by</span>
-          <span style={{ fontFamily: "'Fraunces',serif", fontSize: "0.88rem", fontWeight: 700, color: S.ink, letterSpacing: "-0.01em" }}>Chaitanya</span>
+          <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.ink, letterSpacing: "0.04em" }}>Chaitanya</span>
           <span style={{ fontSize: "1.1rem" }}>🐳</span>
           <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", color: S.ink3 }}>·</span>
           <span style={{ fontSize: "1.1rem" }}>☸️</span>
