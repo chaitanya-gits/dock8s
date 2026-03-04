@@ -3,17 +3,47 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { SECTIONS, FEYNMAN_INSIGHTS } from "@/lib/content";
 
 /* ─── tiny design tokens as inline style helpers ─── */
-const S = {
-  ink: "#0f0f0f", ink2: "#2a2a2a", ink3: "#555",
-  paper: "#fafaf7", paper2: "#f3f3ee", paper3: "#e8e8e0",
-  accent: "#c84b31", accent2: "#1a6b4a", accent3: "#2356a8", accent4: "#7c3aed",
-  yellow: "#f5c842", border: "#d8d8cc", codeBg: "#1e1e2e", codeFg: "#cdd6f4",
+const S: Record<string, string> = {
+  ink: "var(--ink)", ink2: "var(--ink2)", ink3: "var(--ink3)",
+  paper: "var(--paper)", paper2: "var(--paper2)", paper3: "var(--paper3)",
+  accent: "var(--accent)", accent2: "var(--accent2)", accent3: "var(--accent3)", accent4: "var(--accent4)",
+  yellow: "var(--yellow)", border: "var(--border)", codeBg: "var(--code-bg)", codeFg: "var(--code-fg)",
 };
 
 /* ─── Types ─── */
 type SearchResult = { id: string; type: string; section: string; title: string; excerpt: string; anchor: string; };
 type QuizQuestion = { id: string; section: string; question: string; options: string[]; };
 type Progress = { sections: string[]; quiz: string[]; score: number; };
+
+/* ─── Dark Mode Toggle ─── */
+function DarkModeToggle() {
+  const [dark, setDark] = useState(true);
+  useEffect(() => {
+    setDark(document.documentElement.getAttribute("data-theme") !== "light");
+  }, []);
+  const click = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
+    try {
+      localStorage.setItem("theme", next ? "dark" : "light");
+    } catch(e) {}
+  };
+  return (
+    <button onClick={click} style={{
+      background: "none", border: "none", cursor: "pointer", 
+      fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center",
+      width: 30, height: 30, borderRadius: "50%", color: S.ink,
+      transition: "all 0.2s", opacity: 0.8
+    }}
+      onMouseEnter={e => e.currentTarget.style.background = S.paper2}
+      onMouseLeave={e => e.currentTarget.style.background = "none"}
+      title={dark ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {dark ? "🌙" : "☀️"}
+    </button>
+  );
+}
 
 /* ─── Search Bar ─── */
 function SearchBar() {
@@ -38,7 +68,7 @@ function SearchBar() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const typeColors: Record<string, string> = { concept: S.accent3, quiz: S.accent2, feynman: "#a07800" };
+  const typeColors: Record<string, string> = { concept: S.accent3, quiz: S.accent2, feynman: "var(--feynman-title)" };
   const typeLabels: Record<string, string> = { concept: "Concept", quiz: "Quiz", feynman: "💡 Insight" };
 
   return (
@@ -51,7 +81,7 @@ function SearchBar() {
           width: "100%", padding: "5px 10px 5px 28px",
           border: `1px solid rgba(0,0,0,0.13)`, borderRadius: 4,
           fontFamily: "'JetBrains Mono', monospace", fontSize: "0.68rem",
-          background: "rgba(255,255,255,0.6)", color: S.ink, outline: "none",
+          background: "var(--search-bg, rgba(255,255,255,0.6))", color: S.ink, outline: "none",
           backdropFilter: "blur(8px)",
           transition: "border 0.2s, width 0.3s",
         }}
@@ -62,17 +92,17 @@ function SearchBar() {
       {open && (
         <div style={{
           position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0,
-          background: "white", border: `1px solid ${S.border}`, borderRadius: 8,
+          background: S.paper, border: `1px solid ${S.border}`, borderRadius: 8,
           boxShadow: "0 8px 32px rgba(0,0,0,0.1)", zIndex: 1000, overflow: "hidden",
         }}>
           {results.map(r => (
             <a key={r.id} href={`#${r.anchor}`} onClick={() => setOpen(false)}
               style={{ display: "block", padding: "12px 16px", textDecoration: "none", borderBottom: `1px solid ${S.border}` }}
               onMouseEnter={e => (e.currentTarget.style.background = S.paper2)}
-              onMouseLeave={e => (e.currentTarget.style.background = "white")}
+              onMouseLeave={e => (e.currentTarget.style.background = S.paper)}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.62rem", fontWeight: 700, color: typeColors[r.type], background: `${typeColors[r.type]}18`, padding: "2px 7px", borderRadius: 3 }}>
+                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.62rem", fontWeight: 700, color: typeColors[r.type], background: `color-mix(in srgb, ${typeColors[r.type]} 15%, transparent)`, padding: "2px 7px", borderRadius: 3 }}>
                   {typeLabels[r.type]}
                 </span>
                 <span style={{ fontSize: "0.82rem", fontWeight: 600, color: S.ink }}>{r.title}</span>
@@ -104,9 +134,9 @@ function ProgressBar({ progress }: { progress: Progress }) {
 /* ─── Feynman Box ─── */
 function FeynmanBox({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ borderLeft: `4px solid ${S.yellow}`, background: "#fffef0", padding: "24px 28px", borderRadius: "0 8px 8px 0", margin: "32px 0" }}>
-      <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "#a07800", marginBottom: 10 }}>💡 Feynman Says</div>
-      <p style={{ color: "#3a3000", fontStyle: "italic", margin: 0 }}>{children}</p>
+    <div style={{ borderLeft: `4px solid ${S.yellow}`, background: "var(--feynman-bg)", padding: "24px 28px", borderRadius: "0 8px 8px 0", margin: "32px 0" }}>
+      <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--feynman-title)", marginBottom: 10 }}>💡 Feynman Says</div>
+      <p style={{ color: "var(--feynman-text)", fontStyle: "italic", margin: 0 }}>{children}</p>
     </div>
   );
 }
@@ -121,7 +151,7 @@ function CodeBlock({ label, children }: { label?: string; children: string }) {
       <div style={{ position: "relative" }}>
         <pre style={{ background: S.codeBg, color: S.codeFg, borderRadius: 8, padding: "24px 28px", fontFamily: "'JetBrains Mono',monospace", fontSize: "0.8rem", lineHeight: 1.65, overflowX: "auto" }}
           dangerouslySetInnerHTML={{ __html: children }} />
-        <button onClick={copy} style={{ position: "absolute", top: 12, right: 12, background: copied ? S.accent2 : "rgba(255,255,255,0.1)", border: "none", color: "white", padding: "4px 10px", borderRadius: 4, cursor: "pointer", fontFamily: "'JetBrains Mono',monospace", fontSize: "0.65rem", transition: "all 0.2s" }}>
+        <button onClick={copy} style={{ position: "absolute", top: 12, right: 12, background: copied ? S.accent2 : "var(--kopied-bg)", border: "none", color: S.paper, padding: "4px 10px", borderRadius: 4, cursor: "pointer", fontFamily: "'JetBrains Mono',monospace", fontSize: "0.65rem", transition: "all 0.2s" }}>
           {copied ? "✓ copied" : "copy"}
         </button>
       </div>
@@ -150,12 +180,12 @@ function ConceptCard({ title, children }: { title: string; children: React.React
 function PipelineStage({ status, title, children }: { status: "pass" | "run" | "fail"; title: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const colors = { pass: S.accent2, run: S.yellow, fail: S.accent };
-  const badges = { pass: { bg: "#edfaf3", color: S.accent2, label: "PASS" }, run: { bg: "#fffaee", color: "#7a6000", label: "GATE" }, fail: { bg: "#fff0ee", color: S.accent, label: "FAIL" } };
+  const badges = { pass: { bg: "var(--pass-bg)", color: S.accent2, label: "PASS" }, run: { bg: "var(--run-bg)", color: "#7a6000", label: "GATE" }, fail: { bg: "var(--fail-bg)", color: S.accent, label: "FAIL" } };
   const b = badges[status];
   return (
     <div onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "stretch", borderBottom: `1px solid ${S.border}`, cursor: "pointer", transition: "background 0.15s" }}
       onMouseEnter={e => (e.currentTarget.style.background = S.paper2)}
-      onMouseLeave={e => (e.currentTarget.style.background = "white")}
+      onMouseLeave={e => (e.currentTarget.style.background = S.paper)}
     >
       <div style={{ width: 4, background: colors[status], flexShrink: 0 }} />
       <div style={{ flex: 1, padding: "16px 20px" }}>
@@ -233,7 +263,7 @@ function QuizSection({ onAnswer }: { onAnswer: (questionId: string, correct: boo
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {["all", ...SECTIONS.map(s => s.id)].map(f => (
             <button key={f} onClick={() => { setFilter(f); setCurrent(0); setSelected(null); setResult(null); }}
-              style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", padding: "4px 12px", borderRadius: 4, border: `1px solid ${filter === f ? S.accent : S.border}`, background: filter === f ? "#fff5f3" : "white", color: filter === f ? S.accent : S.ink3, cursor: "pointer" }}>
+              style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", padding: "4px 12px", borderRadius: 4, border: `1px solid ${filter === f ? S.accent : S.border}`, background: filter === f ? "var(--active-bg)" : S.paper, color: filter === f ? S.accent : S.ink3, cursor: "pointer" }}>
               {f === "all" ? "All" : SECTIONS.find(s => s.id === f)?.num + " " + (SECTIONS.find(s => s.id === f)?.title || f)}
             </button>
           ))}
@@ -244,7 +274,7 @@ function QuizSection({ onAnswer }: { onAnswer: (questionId: string, correct: boo
       </div>
 
       {/* Question Card */}
-      <div style={{ background: "white", border: `1px solid ${S.border}`, borderRadius: 12, padding: 32 }}>
+      <div style={{ background: S.paper, border: `1px solid ${S.border}`, borderRadius: 12, padding: 32 }}>
         <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", color: S.ink3, marginBottom: 16 }}>
           Q{current + 1} / {filtered.length} · {SECTIONS.find(s => s.id === q.section)?.title}
         </div>
@@ -252,10 +282,10 @@ function QuizSection({ onAnswer }: { onAnswer: (questionId: string, correct: boo
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {q.options.map((opt, i) => {
-            let bg = "white", border = S.border, color = S.ink;
+            let bg = S.paper, border = S.border, color = S.ink;
             if (result) {
-              if (i === result.correctAnswer) { bg = "#edfaf3"; border = S.accent2; color = S.accent2; }
-              else if (i === selected && !result.correct) { bg = "#fff0ee"; border = S.accent; color = S.accent; }
+              if (i === result.correctAnswer) { bg = "var(--pass-bg)"; border = S.accent2; color = S.accent2; }
+              else if (i === selected && !result.correct) { bg = "var(--fail-bg)"; border = S.accent; color = S.accent; }
             } else if (selected === i) { bg = "#eef3ff"; border = S.accent3; color = S.accent3; }
             return (
               <button key={i} onClick={() => !result && setSelected(i)} style={{
@@ -275,7 +305,7 @@ function QuizSection({ onAnswer }: { onAnswer: (questionId: string, correct: boo
 
         {/* Explanation */}
         {result && (
-          <div style={{ marginTop: 20, padding: "16px 20px", background: result.correct ? "#edfaf3" : "#fff0ee", borderRadius: 8, border: `1px solid ${result.correct ? "#b8e8cc" : "#f5c4bc"}` }}>
+          <div style={{ marginTop: 20, padding: "16px 20px", background: result.correct ? "var(--pass-bg)" : "var(--fail-bg)", borderRadius: 8, border: `1px solid ${result.correct ? "#b8e8cc" : "#f5c4bc"}` }}>
             <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: result.correct ? S.accent2 : S.accent, marginBottom: 8 }}>
               {result.correct ? "✓ Correct!" : "✗ Not quite."}
             </div>
@@ -287,12 +317,12 @@ function QuizSection({ onAnswer }: { onAnswer: (questionId: string, correct: boo
           {!result ? (
             <button onClick={submit} disabled={selected === null} style={{
               padding: "10px 24px", background: selected !== null ? S.accent : S.paper3,
-              color: selected !== null ? "white" : S.ink3, border: "none", borderRadius: 6,
+              color: selected !== null ? S.paper : S.ink3, border: "none", borderRadius: 6,
               cursor: selected !== null ? "pointer" : "not-allowed", fontSize: "0.88rem",
               fontFamily: "'DM Sans',sans-serif", fontWeight: 500, transition: "all 0.2s"
             }}>Submit Answer</button>
           ) : (
-            <button onClick={next} style={{ padding: "10px 24px", background: S.ink, color: "white", border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.88rem", fontFamily: "'DM Sans',sans-serif", fontWeight: 500 }}>
+            <button onClick={next} style={{ padding: "10px 24px", background: S.ink, color: S.paper, border: "none", borderRadius: 6, cursor: "pointer", fontSize: "0.88rem", fontFamily: "'DM Sans',sans-serif", fontWeight: 500 }}>
               Next Question →
             </button>
           )}
@@ -312,8 +342,8 @@ function KernelDiagram() {
     { label: "Linux Kernel", sub: "syscalls, VFS, TCP/IP", style: { background: "#eef3ff" }, blocks: [["b", "clone()"], ["b", "unshare()"], ["b", "setns()"], ["b", "pivot_root()"], ["b", "mount()"], ["b", "seccomp()"]] },
   ];
   const blockColors: Record<string, { bg: string; border: string; color: string }> = {
-    c: { bg: "#fff0ee", border: "#f5c4bc", color: S.accent },
-    g: { bg: "#edfaf3", border: "#b8e8cc", color: S.accent2 },
+    c: { bg: "var(--fail-bg)", border: "#f5c4bc", color: S.accent },
+    g: { bg: "var(--pass-bg)", border: "#b8e8cc", color: S.accent2 },
     b: { bg: "#eef3ff", border: "#b8ccf5", color: S.accent3 },
     v: { bg: "#f3eeff", border: "#d0b8f5", color: S.accent4 },
   };
@@ -351,7 +381,7 @@ function ClusterVisual() {
           { title: "kube-scheduler", comps: ["Pod → Node binding", "Filters + Scorers", "Watches unbound pods"], note: "Watches for pods with no nodeName. Scores nodes. Writes nodeName to etcd." },
           { title: "controller-manager", comps: ["ReplicaSet controller", "Deployment controller", "Node controller"], note: "~30 controllers in one binary, each running its own reconciliation loop." },
         ].map((node, i) => (
-          <div key={i} style={{ flex: 1, minWidth: 180, background: "white", border: `1px solid #b8ccf5`, borderRadius: 10, padding: 16 }}>
+          <div key={i} style={{ flex: 1, minWidth: 180, background: S.paper, border: `1px solid #b8ccf5`, borderRadius: 10, padding: 16 }}>
             <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.accent3, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid #d8e4fc" }}>{node.title}</div>
             {node.comps.map((c, j) => <div key={j} style={{ fontSize: "0.7rem", padding: "5px 10px", marginBottom: 6, borderRadius: 4, background: "#eef3ff", border: "1px solid #d0dcf8", color: S.accent3, fontFamily: "'JetBrains Mono',monospace" }}>{c}</div>)}
             <div style={{ fontSize: "0.72rem", color: S.ink3, marginTop: 8 }}>{node.note}</div>
@@ -362,13 +392,13 @@ function ClusterVisual() {
       <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", color: S.accent2, fontWeight: 700, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>Worker Nodes</div>
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
         {[
-          { title: "kubelet", comps: ["Node agent", "Pod lifecycle via CRI", "Reports node status"], extra: <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}><div style={{ background: "#edfaf3", border: "1px solid #a8dcbc", borderRadius: 6, padding: "6px 12px", fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", color: S.accent2 }}>pod: nginx</div><div style={{ background: "#edfaf3", border: "1px solid #a8dcbc", borderRadius: 6, padding: "6px 12px", fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", color: S.accent2 }}>pod: api</div></div> },
+          { title: "kubelet", comps: ["Node agent", "Pod lifecycle via CRI", "Reports node status"], extra: <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}><div style={{ background: "var(--pass-bg)", border: "1px solid #a8dcbc", borderRadius: 6, padding: "6px 12px", fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", color: S.accent2 }}>pod: nginx</div><div style={{ background: "var(--pass-bg)", border: "1px solid #a8dcbc", borderRadius: 6, padding: "6px 12px", fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", color: S.accent2 }}>pod: api</div></div> },
           { title: "kube-proxy", comps: ["Service networking", "iptables / IPVS rules", "Load balancing"], note: "Programs iptables/IPVS to route ClusterIP traffic to pod endpoints." },
           { title: "container runtime", comps: ["containerd (CRI)", "runc (OCI)", "Same as standalone Docker"], note: "The exact same stack as Docker — kubelet just calls containerd's gRPC API directly." },
         ].map((node, i) => (
-          <div key={i} style={{ flex: 1, minWidth: 180, background: "white", border: `1px solid #b8e8cc`, borderRadius: 10, padding: 16 }}>
+          <div key={i} style={{ flex: 1, minWidth: 180, background: S.paper, border: `1px solid #b8e8cc`, borderRadius: 10, padding: 16 }}>
             <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.accent2, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid #c8e8d8" }}>{node.title}</div>
-            {node.comps.map((c, j) => <div key={j} style={{ fontSize: "0.7rem", padding: "5px 10px", marginBottom: 6, borderRadius: 4, background: "#edfaf3", border: "1px solid #b8e8cc", color: S.accent2, fontFamily: "'JetBrains Mono',monospace" }}>{c}</div>)}
+            {node.comps.map((c, j) => <div key={j} style={{ fontSize: "0.7rem", padding: "5px 10px", marginBottom: 6, borderRadius: 4, background: "var(--pass-bg)", border: "1px solid #b8e8cc", color: S.accent2, fontFamily: "'JetBrains Mono',monospace" }}>{c}</div>)}
             {(node as any).note && <div style={{ fontSize: "0.72rem", color: S.ink3, marginTop: 8 }}>{(node as any).note}</div>}
             {(node as any).extra}
           </div>
@@ -481,7 +511,7 @@ export default function Home() {
       <nav className="liquid-nav" style={{
         position: "fixed", top: 18, left: "50%", transform: "translateX(-50%)",
         zIndex: 999,
-        background: "rgba(250,250,247,0.52)",
+        background: "var(--nav-glass-bg)",
         backdropFilter: "blur(28px) saturate(200%) brightness(1.08)",
         WebkitBackdropFilter: "blur(28px) saturate(200%) brightness(1.08)",
         border: "1px solid rgba(255,255,255,0.68)",
@@ -536,7 +566,7 @@ export default function Home() {
 
         {/* Progress pill */}
         <div style={{ position: "relative", zIndex: 2, marginLeft: 6 }}>
-          <ProgressBar progress={progress} />
+          <DarkModeToggle />
         </div>
       </nav>
 
@@ -562,7 +592,7 @@ export default function Home() {
           {[["r", "namespaces"], ["r", "cgroups"], ["g", "overlay FS"], ["g", "OCI"], ["b", "etcd"], ["b", "kube-apiserver"], ["b", "kubelet"], ["v", "control plane"], ["v", "CI/CD → GitOps"]].map(([type, label]) => {
             const chipColors: Record<string, { border: string; color: string }> = { r: { border: S.accent, color: S.accent }, g: { border: S.accent2, color: S.accent2 }, b: { border: S.accent3, color: S.accent3 }, v: { border: S.accent4, color: S.accent4 } };
             const c = chipColors[type];
-            return <div key={label} style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", padding: "5px 14px", borderRadius: 3, border: `1px solid ${c.border}`, color: c.color, background: "white" }}>{label}</div>;
+            return <div key={label} style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", padding: "5px 14px", borderRadius: 3, border: `1px solid ${c.border}`, color: c.color, background: S.paper }}>{label}</div>;
           })}
         </div>
         <div style={{ marginTop: 64, fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", color: S.ink3, display: "flex", alignItems: "center", gap: 10 }}>
@@ -579,7 +609,7 @@ export default function Home() {
         <FeynmanBox>Docker didn&apos;t invent containers. Linux did — years before Docker existed. Docker is really a very good user-friendly wrapper around kernel features. If you can&apos;t explain why a container is NOT a VM, you don&apos;t understand containers yet.</FeynmanBox>
         <p style={{ color: S.ink2, marginBottom: 16 }}>When you type <code style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.82em", background: S.paper3, padding: "2px 7px", borderRadius: 3, color: S.accent }}>docker run nginx</code>, you&apos;re asking the kernel to do three specific things simultaneously. Let&apos;s dissect each one. No hand-waving.</p>
 
-        <div style={{ background: "white", border: `1px solid ${S.border}`, borderRadius: 12, padding: 40, margin: "40px 0" }}>
+        <div style={{ background: S.paper, border: `1px solid ${S.border}`, borderRadius: 12, padding: 40, margin: "40px 0" }}>
           <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: S.ink3, marginBottom: 32 }}>Linux Kernel — Isolation Primitives Used by Containers</div>
           <KernelDiagram />
         </div>
@@ -614,15 +644,15 @@ export default function Home() {
         <H2>The 5-Component Runtime Stack</H2>
         <p style={{ color: S.ink2 }}>Most people think &quot;Docker&quot; is one thing. It&apos;s actually a layered stack of 5 distinct components, each with a specific contract. Understanding their boundaries is how you debug production issues at 3am.</p>
 
-        <div style={{ background: "white", border: `1px solid ${S.border}`, borderRadius: 12, padding: 40, margin: "40px 0" }}>
+        <div style={{ background: S.paper, border: `1px solid ${S.border}`, borderRadius: 12, padding: 40, margin: "40px 0" }}>
           <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: S.ink3, marginBottom: 32 }}>Docker Component Stack — Who Calls Who</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 0, maxWidth: 700 }}>
             {[
-              { emoji: "🖥️", color: S.accent, bg: "#fff5f3", border: "#f5c4bc", title: "docker CLI", desc: "REST API calls to Docker daemon over Unix socket", sep: "↓ HTTP REST /var/run/docker.sock" },
+              { emoji: "🖥️", color: S.accent, bg: "var(--active-bg)", border: "#f5c4bc", title: "docker CLI", desc: "REST API calls to Docker daemon over Unix socket", sep: "↓ HTTP REST /var/run/docker.sock" },
               { emoji: "⚙️", color: "#b06000", bg: "#fff8ee", border: "#f5dcb8", title: "dockerd (Docker Daemon)", desc: "Image management, network, volumes, build cache. Delegates container lifecycle to containerd.", sep: "↓ gRPC /run/containerd/containerd.sock" },
-              { emoji: "📦", color: "#7a6000", bg: "#fffaee", border: "#f5e4a0", title: "containerd", desc: "Industry-standard container runtime. Pulls images, manages snapshots, creates containers via shim.", sep: "↓ OCI Runtime Spec exec()" },
+              { emoji: "📦", color: "#7a6000", bg: "var(--run-bg)", border: "#f5e4a0", title: "containerd", desc: "Industry-standard container runtime. Pulls images, manages snapshots, creates containers via shim.", sep: "↓ OCI Runtime Spec exec()" },
               { emoji: "🔧", color: S.accent3, bg: "#eef5ff", border: "#b8ccf5", title: "runc (OCI Runtime)", desc: "Calls clone(), mount(), pivot_root(), execve(). Sets up namespaces + cgroups. Then exits.", sep: "↓ Linux syscalls" },
-              { emoji: "🐧", color: S.accent2, bg: "#edfaf3", border: "#b8e8cc", title: "Linux Kernel", desc: "Namespaces + cgroups + OverlayFS. The actual isolation happens here.", sep: null },
+              { emoji: "🐧", color: S.accent2, bg: "var(--pass-bg)", border: "#b8e8cc", title: "Linux Kernel", desc: "Namespaces + cgroups + OverlayFS. The actual isolation happens here.", sep: null },
             ].map((layer, i) => (
               <div key={i}>
                 <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 20px", background: layer.bg, border: `1px solid ${layer.border}`, borderRadius: i === 0 ? "8px 8px 0 0" : i === 4 ? "0 0 8px 8px" : 0, borderTop: i > 0 ? "none" : undefined }}>
@@ -654,11 +684,11 @@ export default function Home() {
             content: (
               <div>
                 <p style={{ color: S.ink2 }}>Docker images are stored as a stack of read-only layers using <strong>OverlayFS</strong> — a Linux union filesystem. When a container starts, one writable layer is added on top (the <code style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.82em", background: S.paper3, padding: "2px 7px", borderRadius: 3, color: S.accent }}>upperdir</code>).</p>
-                <div style={{ background: "white", border: `1px solid ${S.border}`, borderRadius: 12, padding: 40, margin: "40px 0" }}>
+                <div style={{ background: S.paper, border: `1px solid ${S.border}`, borderRadius: 12, padding: 40, margin: "40px 0" }}>
                   <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: S.ink3, marginBottom: 32 }}>OverlayFS Mount Structure</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 0, maxWidth: 600 }}>
                     {[
-                      { bg: "#edfaf3", border: "#b8e8cc", color: S.accent2, title: "merged/ (container view)", sub: "What the container sees — unified view of all layers", r: "8px 8px 0 0", op: 1 },
+                      { bg: "var(--pass-bg)", border: "#b8e8cc", color: S.accent2, title: "merged/ (container view)", sub: "What the container sees — unified view of all layers", r: "8px 8px 0 0", op: 1 },
                       { bg: "#fff8ee", border: "#f5dcb8", color: "#b06000", title: "upperdir/ (container layer)", sub: 'Writable. New files written here. Deleted files marked with "whiteout" entries.', r: 0, op: 1 },
                       { bg: "#eef3ff", border: "#b8ccf5", color: S.accent3, title: "lowerdir[n] — Image Layer N (top)", sub: "Read-only. e.g. your app code COPY", r: 0, op: 1 },
                       { bg: "#eef3ff", border: "#b8ccf5", color: S.accent3, title: "lowerdir[n-1] — Image Layer N-1", sub: "Read-only. e.g. apt-get install packages", r: 0, op: 0.85 },
@@ -734,14 +764,14 @@ export default function Home() {
               <div>
                 <FeynmanBox>Layer cache is a <strong>Merkle tree</strong>. Each node&apos;s identity is derived from its content AND its parents. Change anything upstream, and the entire subtree gets a new identity — exactly like Git commits.</FeynmanBox>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-                  <div style={{ background: "#fff0ee", border: `1px solid #f5c4bc`, borderRadius: 8, padding: 20 }}>
+                  <div style={{ background: "var(--fail-bg)", border: `1px solid #f5c4bc`, borderRadius: 8, padding: 20 }}>
                     <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.accent, marginBottom: 12 }}>❌ BAD ORDER — slow builds</div>
                     <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.78rem", color: S.ink2, lineHeight: 1.8 }}>
                       COPY . /app/<br />RUN pip install ...<br />
                       <span style={{ color: S.accent, fontSize: "0.68rem" }}>Every code change invalidates pip layer</span>
                     </div>
                   </div>
-                  <div style={{ background: "#edfaf3", border: `1px solid #b8e8cc`, borderRadius: 8, padding: 20 }}>
+                  <div style={{ background: "var(--pass-bg)", border: `1px solid #b8e8cc`, borderRadius: 8, padding: 20 }}>
                     <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.accent2, marginBottom: 12 }}>✓ GOOD ORDER — fast builds</div>
                     <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.78rem", color: S.ink2, lineHeight: 1.8 }}>
                       COPY requirements.txt .<br />RUN pip install ...<br />COPY . /app/<br />
@@ -852,7 +882,7 @@ export default function Home() {
               { icon: "📝", title: "Logs (Loki / ELK)", body: "Fluent Bit DaemonSet tails /var/log/containers/. Enriches with k8s metadata. Ships to Loki (label-indexed) or Elasticsearch. Use structured logging and query on demand — don't turn logs into dashboards." },
               { icon: "🔍", title: "Traces (OpenTelemetry)", body: "OTel SDK instruments your code. Each request gets a trace ID propagated through all services via HTTP headers. Spans record each hop. Jaeger/Tempo. Traces answer 'why was THIS request slow?' — metrics can't." },
             ].map((card, i) => (
-              <div key={i} style={{ background: "white", border: `1px solid ${S.border}`, borderRadius: 10, padding: 24, marginBottom: 16, transition: "box-shadow 0.2s, transform 0.2s" }}
+              <div key={i} style={{ background: S.paper, border: `1px solid ${S.border}`, borderRadius: 10, padding: 24, marginBottom: 16, transition: "box-shadow 0.2s, transform 0.2s" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px rgba(0,0,0,0.08)"; (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = "none"; (e.currentTarget as HTMLElement).style.transform = "none"; }}>
                 <div style={{ fontSize: "1.8rem", marginBottom: 12 }}>{card.icon}</div>
@@ -899,7 +929,7 @@ export default function Home() {
               { num: "Prom", name: "Observe + Alert", active: false },
             ].map((step, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center" }}>
-                <div style={{ background: step.active ? "#fff5f3" : "white", border: `1px solid ${step.active ? S.accent : S.border}`, borderRadius: 8, padding: "16px 20px", minWidth: 120, textAlign: "center" }}>
+                <div style={{ background: step.active ? "var(--active-bg)" : S.paper, border: `1px solid ${step.active ? S.accent : S.border}`, borderRadius: 8, padding: "16px 20px", minWidth: 120, textAlign: "center" }}>
                   <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.65rem", color: S.ink3, marginBottom: 4 }}>{step.num}</div>
                   <div style={{ fontSize: "0.85rem", fontWeight: 500, color: step.active ? S.accent : S.ink }}>{step.name}</div>
                 </div>
@@ -913,7 +943,7 @@ export default function Home() {
               { color: S.accent3, label: "ORCHESTRATION LAYER", body: "etcd + controllers + scheduler = desired-state reconciliation. Kubernetes is a database with side effects." },
               { color: S.accent2, label: "AUTOMATION LAYER", body: "Git SHA = the contract. CI produces it. CD deploys it. GitOps enforces it. Prometheus watches it." },
             ].map((card, i) => (
-              <div key={i} style={{ padding: 20, background: "white", borderRadius: 8, border: `1px solid ${S.border}` }}>
+              <div key={i} style={{ padding: 20, background: S.paper, borderRadius: 8, border: `1px solid ${S.border}` }}>
                 <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", color: card.color, fontWeight: 700, marginBottom: 8 }}>{card.label}</div>
                 <div style={{ fontSize: "0.85rem", color: S.ink2 }}>{card.body}</div>
               </div>
