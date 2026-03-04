@@ -953,8 +953,6 @@ export default function Home() {
           <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", fontWeight: 700, color: S.ink, letterSpacing: "0.04em" }}>Chaitanya</span>
           <span style={{ fontSize: "1.1rem" }}>🐳</span>
           <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", color: S.ink3 }}>·</span>
-          <span style={{ fontSize: "1.1rem" }}>☸️</span>
-          <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.72rem", color: S.ink3 }}>·</span>
           <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "0.68rem", color: S.ink3, letterSpacing: "0.06em", background: S.paper3, padding: "2px 10px", borderRadius: 20, border: `1px solid ${S.border}` }}>v1.0.00</span>
         </div>
       </footer>
