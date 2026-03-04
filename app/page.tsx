@@ -27,11 +27,11 @@ function DarkModeToggle() {
     document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
     try {
       localStorage.setItem("theme", next ? "dark" : "light");
-    } catch(e) {}
+    } catch (e) { }
   };
   return (
     <button onClick={click} style={{
-      background: "none", border: "none", cursor: "pointer", 
+      background: "none", border: "none", cursor: "pointer",
       fontSize: "1.1rem", display: "flex", alignItems: "center", justifyContent: "center",
       width: 30, height: 30, borderRadius: "50%", color: S.ink,
       transition: "all 0.2s", opacity: 0.8
@@ -494,12 +494,12 @@ export default function Home() {
           50% { transform: translateX(-50%) translateY(-3px); }
         }
         @keyframes glassGlow {
-          0%,100% { box-shadow: 0 8px 32px rgba(200,75,49,0.07), 0 2px 12px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(255,255,255,0.3); }
-          50% { box-shadow: 0 14px 44px rgba(200,75,49,0.13), 0 4px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(255,255,255,0.45); }
+          0%,100% { box-shadow: var(--nav-box-shadow-1); }
+          50% { box-shadow: var(--nav-box-shadow-2); }
         }
         .liquid-nav { animation: navFloat 6s ease-in-out infinite, glassGlow 4s ease-in-out infinite; }
-        .liquid-nav::before { content:''; position:absolute; inset:0; border-radius:50px; background:linear-gradient(105deg,rgba(255,255,255,0.55) 0%,rgba(255,255,255,0.08) 45%,rgba(255,255,255,0.5) 100%); pointer-events:none; z-index:1; }
-        .liquid-nav::after { content:''; position:absolute; inset:0; border-radius:50px; background:linear-gradient(180deg,rgba(255,255,255,0.55) 0%,transparent 55%); pointer-events:none; z-index:1; }
+        .liquid-nav::before { content:''; position:absolute; inset:0; border-radius:50px; background:linear-gradient(105deg,var(--nav-glass-grad1) 0%,var(--nav-glass-grad2) 45%,var(--nav-glass-grad3) 100%); pointer-events:none; z-index:1; }
+        .liquid-nav::after { content:''; position:absolute; inset:0; border-radius:50px; background:linear-gradient(180deg,var(--nav-glass-grad1) 0%,transparent 55%); pointer-events:none; z-index:1; }
         .nav-link-pill { position:relative; z-index:2; transition:color 0.2s, opacity 0.2s !important; }
         .nav-link-pill:hover { color:var(--accent) !important; opacity:0.85; }
         .nav-logo-btn { cursor:pointer; transition:all 0.2s !important; }
@@ -514,7 +514,7 @@ export default function Home() {
         background: "var(--nav-glass-bg)",
         backdropFilter: "blur(28px) saturate(200%) brightness(1.08)",
         WebkitBackdropFilter: "blur(28px) saturate(200%) brightness(1.08)",
-        border: "1px solid rgba(255,255,255,0.68)",
+        border: "1px solid var(--nav-glass-border-color)",
         borderRadius: 50,
         padding: "0 12px 0 20px",
         height: 52,
@@ -540,7 +540,7 @@ export default function Home() {
         <div style={{ width: 1, height: 18, background: "var(--border-alpha)", flexShrink: 0, position: "relative", zIndex: 2 }} />
 
         {/* Section links */}
-        <div style={{ display: "flex", gap: 2, alignItems: "center", flex: 1, position: "relative", zIndex: 2 }}>
+        <div style={{ display: "flex", justifyContent: "space-evenly", alignItems: "center", flex: 1, position: "relative", zIndex: 2 }}>
           {SECTIONS.map(s => (
             <a key={s.id} href={`#${s.id}`} className="nav-link-pill" style={{
               fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase",
